@@ -8,7 +8,7 @@ const routes = [
   {
     path:'/',
     component: () => import('./views/HomePage.vue'),
-   
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -37,6 +37,15 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = /* your authentication logic here */ false;
 
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    // Redirect to login page if not authenticated
+    next('/login');
+  } else {
+    next();
+  }
+});
 
 export default router;
