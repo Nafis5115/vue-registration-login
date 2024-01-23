@@ -15,12 +15,14 @@ const routes = [
     path: '/login',
     component: () => import('./views/LoginPage.vue'),
     name: 'Login',
+    meta: { requiresAuth: false }
   },
 
   {
     path: '/sign-up',
     component: () => import('./views/SignUp.vue'),
     name: 'SignUp',
+    meta: { requiresAuth: false }
   },
   
   {
@@ -32,6 +34,11 @@ const routes = [
 
 ];
 
+const isLoggedIn = () => {
+  const token = localStorage.getItem('access_token');
+  return token !== null;
+};
+
 
 
 const router = createRouter({
@@ -41,7 +48,14 @@ const router = createRouter({
 
 
 
- 
+router.beforeEach((to, from, next) => {
+  if ((to.name === 'Login' || to.name === 'SignUp') && isLoggedIn()) {
+      // If the user is already logged in, redirect to the home page or another route
+      next('/');
+  } else {
+      next();
+  }
+});
 
   router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
