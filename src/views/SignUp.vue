@@ -156,6 +156,7 @@ const signUp = async () => {
   if(v$.value.$pending || !v$.value.$errors || !v$.value.$invalid){
     axios.post("http://127.0.0.1:8000/api/register", state).then(({ data }) => {
     console.log(data);
+   
     toast.success("Registration Successfully", { timeout: 2000 });
 
         isLoading.value = true;

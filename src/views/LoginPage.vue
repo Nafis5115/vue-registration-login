@@ -15,7 +15,9 @@
             id="email"
             v-model="state.email"
           />
-          <p class="pb-3 text-red-600 text-sm" v-if="v$.email.$error">{{ v$.email.$errors[0].$message }}</p>
+          <p class="pb-3 text-red-600 text-sm" v-if="v$.email.$error">
+            {{ v$.email.$errors[0].$message }}
+          </p>
 
           <CustomTextInput
             label="Password"
@@ -24,8 +26,9 @@
             v-model="state.password"
             :password="true"
           />
-          <p class="pb-3 text-red-600 text-sm" v-if="v$.password.$error">{{ v$.password.$errors[0].$message }}</p>
-
+          <p class="pb-3 text-red-600 text-sm" v-if="v$.password.$error">
+            {{ v$.password.$errors[0].$message }}
+          </p>
 
           <div class="flex justify-between w-full py-4">
             <div class="mr-24">
@@ -47,11 +50,7 @@
               Forgot password?
             </button>
           </div>
-          <CustomButton
-
-            :isLoading="isLoading"
-            label="Log in"
-          />
+          <CustomButton :isLoading="isLoading" label="Log in" />
         </form>
 
         <button
@@ -115,48 +114,65 @@ import CustomTextInput from "../components/CustomTextInput.vue";
 import CustomButton from "../components/CustomButton.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
-
+import axios from "axios";
+import { useToast } from "vue-toastification";
 
 const isLoading = ref(false);
 const isChecked = ref(false);
 
 const router = useRouter();
+const toast = useToast();
 
 const state = reactive({
-
   email: "",
   password: "",
-
 });
 
 const rules = computed(() => {
   return {
-    email: {required: helpers.withMessage('Email is required', required), email:helpers.withMessage('Email is not valid', email)},
-    password: {required: helpers.withMessage('Password is required', required), minLength:helpers.withMessage('Password is must be 8 characters', minLength(8)) },
+    email: {
+      required: helpers.withMessage("Email is required", required),
+      email: helpers.withMessage("Email is not valid", email),
+    },
+    password: {
+      required: helpers.withMessage("Password is required", required),
+      minLength: helpers.withMessage(
+        "Password is must be 8 characters",
+        minLength(8)
+      ),
+    },
   };
 });
 
 const v$ = useVuelidate(rules, state);
 
-const  login = async() => {
-  
+const login = async () => {
   await v$.value.$validate();
-  if (v$.value.$pending) {
-    await $v.$wait();
 
-    if (!v$.value.$error) {
-      isLoading.value = true;
-      setTimeout(() => {
-        isLoading.value = false;
-        router.push("/");
-      }, 1000);
-    }
-  } else if (!v$.value.$error) {
-    isLoading.value = true;
-    setTimeout(() => {
-      isLoading.value = false;
-      router.push("/");
-    }, 1000);
+  if (v$.value.$pending || !v$.value.$errors || !v$.value.$invalid) {
+    axios
+      .post("http://127.0.0.1:8000/api/login", state)
+      .then(({ data }) => {
+        console.log(data.token);
+        const token = data.token;
+        const userName = data.user.name;
+    localStorage.setItem('user_name', userName);
+        localStorage.setItem('access_token', token);
+        
+        toast.success("Successfully login", { timeout: 2000 });
+
+        isLoading.value = true;
+        setTimeout(() => {
+          isLoading.value = false;
+
+          router.push("/");
+        }, 2500);
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          toast.error("Email or password is incorrect", { timeout: 2000 });
+        }
+      });
   }
 };
 </script>
