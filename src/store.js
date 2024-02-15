@@ -21,7 +21,7 @@ const clearAuthData = () => {
 
 const login = async credentials => {
   try {
-    const response = await axios.post('/api/login', credentials);
+    const response = await axios.post('https://vue-registration-login-ppr1b8pcr-nafis-projects-abcf2012.vercel.app/api/login', credentials);
     const newToken = response.data.token;
     setToken(newToken);
     return newToken;
@@ -33,7 +33,7 @@ const login = async credentials => {
 
 const fetchUser = async () => {
   try {
-    const response = await axios.get('/api/user');
+    const response = await axios.get('https://vue-registration-login-ppr1b8pcr-nafis-projects-abcf2012.vercel.app/api/user');
     const newUser = response.data.user;
     setUser(newUser);
     return newUser;

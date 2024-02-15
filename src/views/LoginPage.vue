@@ -151,7 +151,7 @@ const login = async () => {
 
   if (v$.value.$pending || !v$.value.$errors || !v$.value.$invalid) {
     axios
-      .post("http://127.0.0.1:8000/api/login", state)
+      .post("https://vue-registration-login-ppr1b8pcr-nafis-projects-abcf2012.vercel.app/api/login", state)
       .then(({ data }) => {
         console.log(data.token);
         const token = data.token;

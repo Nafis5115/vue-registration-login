@@ -154,7 +154,7 @@ const signUp = async () => {
   await v$.value.$validate();
 
   if(v$.value.$pending || !v$.value.$errors || !v$.value.$invalid){
-    axios.post("http://127.0.0.1:8000/api/register", state).then(({ data }) => {
+    axios.post("https://vue-registration-login-ppr1b8pcr-nafis-projects-abcf2012.vercel.app/api/register", state).then(({ data }) => {
     console.log(data);
    
     toast.success("Registration Successfully", { timeout: 2000 });
